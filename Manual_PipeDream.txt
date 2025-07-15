@@ -1,0 +1,269 @@
+# Manual PipeDream
+
+## Introdução
+Este manual descreve como utilizar uma interface gráfica amigável baseada no repositório oficial da Pipedream, incluindo uma aba de configurações para cadastro via API dos modelos OpenRouter e Gemini CLI. O objetivo é fornecer um guia completo sobre os recursos e funcionamento da ferramenta, desde a configuração inicial até o uso avançado de automações.
+
+---
+
+## 1. Instalação e Inicialização
+
+1. Clone o repositório oficial da Pipedream:
+   ```bash
+   git clone https://github.com/PipedreamHQ/pipedream.git
+   cd pipedream
+   ```
+2. Instale as dependências necessárias:
+   ```bash
+   npm install
+   ```
+3. Inicie a aplicação:
+   ```bash
+   npm start
+   ```
+
+A interface estará disponível em `http://localhost:PORT`.
+
+---
+
+## 2. Interface Gráfica
+
+### 2.1. Visão Geral
+A interface é composta por:
+- **Dashboard:** Exibe os workflows, status de execução, logs e histórico de eventos.
+- **Aba de Configurações:** Permite cadastrar e gerenciar integrações com modelos OpenRouter e Gemini CLI via API.
+- **Editor de Workflows:** Criação e edição visual de pipelines, com suporte a triggers, ações, scripts e integrações.
+- **Monitoramento:** Visualização em tempo real dos eventos, execuções e logs detalhados.
+
+### 2.2. Aba de Configurações
+
+#### Cadastro de Modelos OpenRouter
+- Acesse a aba "Configurações".
+- Clique em "Adicionar Integração" > "OpenRouter".
+- Informe a API Key e endpoint do modelo desejado.
+- Clique em "Salvar". A integração será testada automaticamente e ficará disponível para uso nos workflows.
+
+#### Cadastro de Modelos Gemini CLI
+- Na mesma aba, clique em "Adicionar Integração" > "Gemini CLI".
+- Informe o token de autenticação e endpoint do Gemini CLI.
+- Clique em "Salvar". A integração será validada e ficará disponível para uso.
+
+#### Gerenciamento
+- Visualize, edite ou remova integrações cadastradas.
+- Teste conexões diretamente pela interface.
+
+---
+
+## 3. Criação de Workflows
+
+### 3.1. Novo Workflow
+- Clique em "Novo Workflow".
+- Defina um nome e descrição.
+- Adicione um trigger (ex: webhook, agendamento, evento externo).
+- Adicione ações arrastando componentes para o fluxo (ex: chamada de API, execução de script, integração com OpenRouter ou Gemini CLI).
+- Configure cada ação com os parâmetros necessários.
+- Salve e ative o workflow.
+
+### 3.2. Edição Visual
+- Utilize o editor drag-and-drop para reorganizar etapas.
+- Adicione condições, loops, ramificações e manipulação de variáveis.
+- Visualize o fluxo completo antes de salvar.
+
+---
+
+## 4. Execução e Monitoramento
+
+- Acompanhe execuções em tempo real pelo dashboard.
+- Visualize logs detalhados de cada etapa.
+- Consulte histórico de execuções, erros e alertas.
+- Reexecute workflows manualmente ou agende execuções recorrentes.
+
+---
+
+## 5. Recursos Avançados
+
+- **Integração com APIs externas:** Use componentes para conectar com qualquer API REST, incluindo autenticação, headers e payloads customizados.
+- **Execução de scripts customizados:** Adicione etapas de código em Node.js ou Python diretamente no fluxo.
+- **Notificações:** Configure alertas por e-mail, Slack, Telegram, etc.
+- **Variáveis de ambiente:** Gerencie segredos e variáveis sensíveis de forma segura.
+- **Controle de versões:** Histórico de alterações nos workflows.
+- **Permissões e times:** Gerencie acesso de usuários e times aos workflows e integrações.
+
+---
+
+## 6. Cadastro e Uso dos Modelos OpenRouter e Gemini CLI
+
+### 6.1. OpenRouter
+- Após cadastrar a integração, adicione uma etapa "OpenRouter" no workflow.
+- Configure o prompt, parâmetros do modelo e opções de resposta.
+- Use variáveis do fluxo para personalizar prompts dinamicamente.
+- As respostas do modelo podem ser usadas em etapas seguintes do workflow.
+
+### 6.2. Gemini CLI
+- Adicione uma etapa "Gemini CLI" no workflow.
+- Configure o comando, parâmetros e manipulação de saída.
+- Integre a resposta do Gemini CLI com outras ações do fluxo.
+
+---
+
+## 7. Boas Práticas
+
+- Teste integrações antes de usar em produção.
+- Use variáveis de ambiente para segredos.
+- Documente workflows e etapas para facilitar manutenção.
+- Monitore logs e alertas para identificar falhas rapidamente.
+
+---
+
+## 8. Suporte e Comunidade
+
+- Consulte a [documentação oficial](https://pipedream.com/docs) para detalhes técnicos.
+- Participe da [comunidade](https://pipedream.com/community) para dúvidas e sugestões.
+- Contribua com melhorias e novos componentes via pull requests no repositório oficial.
+
+---
+
+## 9. Conclusão
+
+A interface gráfica baseada no repositório oficial da Pipedream, com integração via API dos modelos OpenRouter e Gemini CLI, permite criar automações poderosas, flexíveis e seguras, com monitoramento em tempo real e facilidade de uso para equipes de todos os tamanhos.
+
+---
+
+## 10. Integração com Supabase e Banco de Dados
+
+### Usando Supabase como banco de dados
+- O Supabase é um serviço open source que oferece PostgreSQL gerenciado, autenticação e API REST.
+- Para usar o Supabase como banco de dados do backend, basta copiar a string de conexão do Supabase (Dashboard > Project Settings > Database > Connection string) e colar no arquivo `.env` do backend:
+
+```
+DATABASE_URL=postgres://usuario:senha@host:porta/nome_do_banco
+```
+- Se estiver usando Docker Compose, ajuste a variável `DATABASE_URL` no serviço backend para apontar para o Supabase.
+
+### Exemplo de docker-compose.yml com Supabase local
+```yaml
+version: '3.8'
+services:
+  supabase-db:
+    image: supabase/postgres:15.1.0.88
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pipedream
+      POSTGRES_DB: pipedream
+      POSTGRES_USER: pipedream
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    command: npm run dev
+    volumes:
+      - .:/app
+    ports:
+      - '4000:4000'
+    environment:
+      DATABASE_URL: postgres://pipedream:pipedream@supabase-db:5432/pipedream
+    depends_on:
+      - supabase-db
+
+volumes:
+  db_data:
+```
+
+---
+
+## 11. Exemplos de Rotas para Workflows e Logs
+
+### Workflows
+- `POST   /api/workflows` — Cria um novo workflow
+- `GET    /api/workflows` — Lista todos os workflows
+- `GET    /api/workflows/:id` — Busca workflow por ID
+- `PUT    /api/workflows/:id` — Atualiza workflow
+- `DELETE /api/workflows/:id` — Remove workflow
+
+### Logs
+- `POST   /api/logs` — Cria um novo log
+- `GET    /api/logs` — Lista todos os logs (com workflow relacionado)
+- `GET    /api/logs/:id` — Busca log por ID
+- `DELETE /api/logs/:id` — Remove log
+
+---
+
+## 12. Como conectar o frontend ao backend
+
+- No frontend React, utilize `fetch` ou `axios` para consumir as rotas do backend.
+- Exemplo de chamada para criar uma integração:
+
+```js
+fetch('http://localhost:4000/api/integrations', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ type: 'openrouter', apiKey: 'SUA_KEY', endpoint: 'https://...' })
+})
+  .then(res => res.json())
+  .then(data => console.log(data));
+```
+- Para produção, configure a URL do backend em uma variável de ambiente do React (`REACT_APP_API_URL`).
+
+--- 
+
+---
+
+## 13. Integração com MCP (Model Context Protocol)
+
+- O backend está pronto para integração com MCP, permitindo automações e uso de modelos como OpenRouter e Google Gemini CLI.
+- Configure o MCP localmente ou use um endpoint remoto.
+- Exemplo de configuração no `.env`:
+
+```
+MCP_SERVER_URL=http://localhost:8080
+OPENROUTER_API_KEY=sua_openrouter_api_key
+GEMINI_API_KEY=sua_gemini_api_key
+```
+
+- Para adicionar novos modelos, basta incluir as variáveis de ambiente correspondentes e configurar o MCP conforme a documentação.
+
+---
+
+## 14. Exemplo de .env para integração completa
+
+```
+# String de conexão do banco de dados (Supabase ou local)
+DATABASE_URL=postgres://usuario:senha@host:porta/nome_do_banco
+
+# URL do servidor MCP
+MCP_SERVER_URL=http://localhost:8080
+
+# Chaves de API dos modelos
+OPENROUTER_API_KEY=sua_openrouter_api_key
+GEMINI_API_KEY=sua_gemini_api_key
+```
+
+---
+
+## 15. Commit e Push para o GitHub
+
+- O backend já está versionado com Git e pronto para colaboração.
+- Para enviar alterações ao repositório remoto:
+
+```bash
+git add .
+git commit -m "feat: estrutura inicial backend, integração com MCP, exemplos de workflows/logs, config Supabase, .env.example"
+git push -u origin main
+```
+
+- O repositório remoto utilizado: https://github.com/glolivercoder/Piperdream_automa-o
+
+---
+
+## 16. Resumo das últimas alterações
+
+- Estrutura inicial do backend Node.js com Express e Prisma
+- Integração pronta para Supabase e MCP
+- Rotas CRUD para integrações, workflows e logs
+- Dockerfile e docker-compose.yml para fácil deploy
+- Exemplo de .env para configuração rápida
+- Manual atualizado com todos os passos e exemplos
+
+--- 
