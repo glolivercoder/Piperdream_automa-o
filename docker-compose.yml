@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  # Serviço Supabase (usando imagem oficial)
+  supabase-db:
+    image: supabase/postgres:15.1.0.88
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pipedream
+      POSTGRES_DB: pipedream
+      POSTGRES_USER: pipedream
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    command: npm run dev
+    volumes:
+      - .:/app
+    ports:
+      - '4000:4000'
+    environment:
+      # Use a string de conexão do Supabase aqui se preferir
+      DATABASE_URL: postgres://pipedream:pipedream@supabase-db:5432/pipedream
+    depends_on:
+      - supabase-db
+
+volumes:
+  db_data: 

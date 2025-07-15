@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Integration {
+  id        Int      @id @default(autoincrement())
+  type      String   // 'openrouter' ou 'gemini'
+  apiKey    String
+  endpoint  String
+  createdAt DateTime @default(now())
+}
+
+model Workflow {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  config      Json
+  createdAt   DateTime @default(now())
+  logs        Log[]    // relação inversa para Log
+}
+
+model Log {
+  id         Int      @id @default(autoincrement())
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflowId Int
+  message    String
+  level      String   // info, warning, error
+  createdAt  DateTime @default(now())
+}
